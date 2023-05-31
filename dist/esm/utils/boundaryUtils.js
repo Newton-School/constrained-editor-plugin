@@ -27,7 +27,6 @@ export const getEditorBoundaryExcludingBoundaryList = (
         boundary.endColumn,
         lastBoundaryDetails.endLineNumber,
         lastBoundaryDetails.endColumn,
-        ,
       ]);
     }
     lastBoundaryDetails.startLineNumber = boundary.endLineNumber;
