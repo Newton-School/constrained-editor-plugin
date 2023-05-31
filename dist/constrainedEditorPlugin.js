@@ -366,6 +366,8 @@ const constrainedModel = function (model, ranges, monaco) {
     if (!model._hasHighlight) {
       const cssClassForSingleLine = cssClasses.cssClassForSingleLine ||_utils_enums_js__WEBPACK_IMPORTED_MODULE_1__["default"].SINGLE_LINE_HIGHLIGHT_CLASS
       const cssClassForMultiLine = cssClasses.cssClassForMultiLine ||_utils_enums_js__WEBPACK_IMPORTED_MODULE_1__["default"].MULTI_LINE_HIGHLIGHT_CLASS
+      const cssClassForRestrictedArea = cssClasses.cssClassForRestrictedArea ||_utils_enums_js__WEBPACK_IMPORTED_MODULE_1__["default"].RESTRICTED_AREA_HIGHLIGHT_CLASS
+
       const decorations = restrictions.map(function (restriction) {
         const decoration = {
           range: restriction.range,
@@ -379,6 +381,12 @@ const constrainedModel = function (model, ranges, monaco) {
           decoration.hoverMessage = restriction.label;
         }
         return decoration;
+      });
+      decorations.push({
+        range: model.getFullModelRange(),
+        options: {
+          className: cssClassForRestrictedArea
+        }
       });
       model._oldDecorations = model.deltaDecorations([], decorations);
       model._oldDecorationsSource = decorations.map(function (decoration, index) {
@@ -701,7 +709,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 const enums = {
   SINGLE_LINE_HIGHLIGHT_CLASS: 'editableArea--single-line',
-  MULTI_LINE_HIGHLIGHT_CLASS: 'editableArea--multi-line'
+  MULTI_LINE_HIGHLIGHT_CLASS: 'editableArea--multi-line',
+  RESTRICTED_AREA_HIGHLIGHT_CLASS: 'editableArea--restricted',
+  
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (enums);
 

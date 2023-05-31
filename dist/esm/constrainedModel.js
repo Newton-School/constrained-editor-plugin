@@ -349,6 +349,8 @@ export const constrainedModel = function (model, ranges, monaco) {
     if (!model._hasHighlight) {
       const cssClassForSingleLine = cssClasses.cssClassForSingleLine ||enums.SINGLE_LINE_HIGHLIGHT_CLASS
       const cssClassForMultiLine = cssClasses.cssClassForMultiLine ||enums.MULTI_LINE_HIGHLIGHT_CLASS
+      const cssClassForRestrictedArea = cssClasses.cssClassForRestrictedArea ||enums.RESTRICTED_AREA_HIGHLIGHT_CLASS
+
       const decorations = restrictions.map(function (restriction) {
         const decoration = {
           range: restriction.range,
@@ -362,6 +364,12 @@ export const constrainedModel = function (model, ranges, monaco) {
           decoration.hoverMessage = restriction.label;
         }
         return decoration;
+      });
+      decorations.push({
+        range: model.getFullModelRange(),
+        options: {
+          className: cssClassForRestrictedArea
+        }
       });
       model._oldDecorations = model.deltaDecorations([], decorations);
       model._oldDecorationsSource = decorations.map(function (decoration, index) {
