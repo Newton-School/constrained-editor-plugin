@@ -6,31 +6,32 @@ export const getEditorBoundaryExcludingBoundaryList = (
   const lastBoundaryDetails = editorBoundary;
   boundaryList.forEach((boundary, index) => {
     if (
-      boundary[0] > lastBoundaryDetails[0] ||
-      (boundary[0] === lastBoundaryDetails[0] &&
-        boundary[1] > lastBoundaryDetails[1])
+      boundary.startLineNumber > lastBoundaryDetails.startLineNumber ||
+      (boundary.startLineNumber === lastBoundaryDetails.startLineNumber &&
+        boundary.startColumn > lastBoundaryDetails.startColumn)
     ) {
       finalBoundaryList.push([
-        lastBoundaryDetails[0],
-        lastBoundaryDetails[1],
-        boundary[0],
-        boundary[1],
+        lastBoundaryDetails.startLineNumber,
+        lastBoundaryDetails.startColumn,
+        boundary.startLineNumber,
+        boundary.startColumn,
       ]);
     }
     if (
       index === boundaryList.length - 1 &&
-      (boundary[2] !== lastBoundaryDetails[2] ||
-        boundary[3] !== lastBoundaryDetails[3])
+      (boundary.endLineNumber !== lastBoundaryDetails.endLineNumber ||
+        boundary.endColumn !== lastBoundaryDetails.endColumn)
     ) {
       finalBoundaryList.push([
-        boundary[2],
-        boundary[3],
-        lastBoundaryDetails[2],
-        lastBoundaryDetails[3],
+        boundary.endLineNumber,
+        boundary.endColumn,
+        lastBoundaryDetails.endLineNumber,
+        lastBoundaryDetails.endColumn,
+        ,
       ]);
     }
-    lastBoundaryDetails[0] = boundary[2];
-    lastBoundaryDetails[1] = boundary[3];
+    lastBoundaryDetails.startLineNumber = boundary.endLineNumber;
+    lastBoundaryDetails.startColumn = boundary.endColumn    ;
   });
   return finalBoundaryList;
 };
