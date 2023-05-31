@@ -445,15 +445,17 @@ export const constrainedModel = function (model, ranges, monaco) {
         }
         return decoration;
       });
-      decorations.push({
-        range: getEditorBoundaryExcludingBoundaryList(
-          model.getFullModelRange(),
-          restrictions.map((restriction) => restriction.range)
-        ),
-        options: {
-          className: cssClassForRestrictedArea,
-        },
-      });
+      getEditorBoundaryExcludingBoundaryList(
+        model.getFullModelRange(),
+        restrictions.map((restriction) => restriction.range)
+      ).forEach((range) => {
+        decorations.push({
+          range,
+          options: {
+            className: cssClassForRestrictedArea,
+          },
+        });
+      })
       model._oldDecorations = model.deltaDecorations([], decorations);
       model._oldDecorationsSource = decorations.map(function (
         decoration,

@@ -463,15 +463,17 @@ const constrainedModel = function (model, ranges, monaco) {
         }
         return decoration;
       });
-      decorations.push({
-        range: (0,_utils_boundaryUtils_js__WEBPACK_IMPORTED_MODULE_0__.getEditorBoundaryExcludingBoundaryList)(
-          model.getFullModelRange(),
-          restrictions.map((restriction) => restriction.range)
-        ),
-        options: {
-          className: cssClassForRestrictedArea,
-        },
-      });
+      (0,_utils_boundaryUtils_js__WEBPACK_IMPORTED_MODULE_0__.getEditorBoundaryExcludingBoundaryList)(
+        model.getFullModelRange(),
+        restrictions.map((restriction) => restriction.range)
+      ).forEach((range) => {
+        decorations.push({
+          range,
+          options: {
+            className: cssClassForRestrictedArea,
+          },
+        });
+      })
       model._oldDecorations = model.deltaDecorations([], decorations);
       model._oldDecorationsSource = decorations.map(function (
         decoration,
