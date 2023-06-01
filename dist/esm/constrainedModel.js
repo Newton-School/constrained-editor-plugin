@@ -1,9 +1,9 @@
-import { getEditorBoundaryExcludingBoundaryList } from "./utils/boundaryUtils.js";
-import deepClone from "./utils/deepClone.js";
-import enums from "./utils/enums.js";
-export const constrainedModel = function (model, ranges, monaco) {
+import { getEditorBoundaryExcludingBoundaryList } from './utils/boundaryUtils.js';
+import deepClone from './utils/deepClone.js';
+import enums from './utils/enums.js';
+export const constrainedModel = function(model, ranges, monaco) {
   const rangeConstructor = monaco.Range;
-  const sortRangesInAscendingOrder = function (rangeObject1, rangeObject2) {
+  const sortRangesInAscendingOrder = function(rangeObject1, rangeObject2) {
     const rangeA = rangeObject1.range;
     const rangeB = rangeObject2.range;
     if (
@@ -13,25 +13,25 @@ export const constrainedModel = function (model, ranges, monaco) {
       return -1;
     }
   };
-  const normalizeRange = function (range, content) {
-    const lines = content.split("\n");
+  const normalizeRange = function(range, content) {
+    const lines = content.split('\n');
     const noOfLines = lines.length;
     const normalizedRange = [];
-    range.forEach(function (value, index) {
+    range.forEach(function(value, index) {
       if (value === 0) {
-        throw new Error("Range values cannot be zero"); //No I18n
+        throw new Error('Range values cannot be zero'); //No I18n
       }
       switch (index) {
         case 0:
           {
             if (value < 0) {
-              throw new Error("Start Line of Range cannot be negative"); //No I18n
+              throw new Error('Start Line of Range cannot be negative'); //No I18n
             } else if (value > noOfLines) {
               throw new Error(
-                "Provided Start Line(" +
+                'Provided Start Line(' +
                   value +
-                  ") is out of bounds. Max Lines in content is " +
-                  noOfLines
+                  ') is out of bounds. Max Lines in content is ' +
+                  noOfLines,
               ); //No I18n
             }
             normalizedRange[index] = value;
@@ -46,22 +46,22 @@ export const constrainedModel = function (model, ranges, monaco) {
               actualStartCol = maxCols - Math.abs(actualStartCol);
               if (actualStartCol < 0) {
                 throw new Error(
-                  "Provided Start Column(" +
+                  'Provided Start Column(' +
                     value +
-                    ") is out of bounds. Max Column in line " +
+                    ') is out of bounds. Max Column in line ' +
                     startLineNo +
-                    " is " +
-                    maxCols
+                    ' is ' +
+                    maxCols,
                 ); //No I18n
               }
             } else if (actualStartCol > maxCols + 1) {
               throw new Error(
-                "Provided Start Column(" +
+                'Provided Start Column(' +
                   value +
-                  ") is out of bounds. Max Column in line " +
+                  ') is out of bounds. Max Column in line ' +
                   startLineNo +
-                  " is " +
-                  maxCols
+                  ' is ' +
+                  maxCols,
               ); //No I18n
             }
             normalizedRange[index] = actualStartCol;
@@ -74,25 +74,25 @@ export const constrainedModel = function (model, ranges, monaco) {
               actualEndLine = noOfLines - Math.abs(value);
               if (actualEndLine < 0) {
                 throw new Error(
-                  "Provided End Line(" +
+                  'Provided End Line(' +
                     value +
-                    ") is out of bounds. Max Lines in content is " +
-                    noOfLines
+                    ') is out of bounds. Max Lines in content is ' +
+                    noOfLines,
                 ); //No I18n
               }
               if (actualEndLine < normalizedRange[0]) {
                 console.warn(
-                  "Provided End Line(" +
+                  'Provided End Line(' +
                     value +
-                    ") is less than the start Line, the Restriction may not behave as expected"
+                    ') is less than the start Line, the Restriction may not behave as expected',
                 ); //No I18n
               }
             } else if (value > noOfLines) {
               throw new Error(
-                "Provided End Line(" +
+                'Provided End Line(' +
                   value +
-                  ") is out of bounds. Max Lines in content is " +
-                  noOfLines
+                  ') is out of bounds. Max Lines in content is ' +
+                  noOfLines,
               ); //No I18n
             }
             normalizedRange[index] = actualEndLine;
@@ -107,22 +107,22 @@ export const constrainedModel = function (model, ranges, monaco) {
               actualEndCol = maxCols - Math.abs(actualEndCol);
               if (actualEndCol < 0) {
                 throw new Error(
-                  "Provided End Column(" +
+                  'Provided End Column(' +
                     value +
-                    ") is out of bounds. Max Column in line " +
+                    ') is out of bounds. Max Column in line ' +
                     endLineNo +
-                    " is " +
-                    maxCols
+                    ' is ' +
+                    maxCols,
                 ); //No I18n
               }
             } else if (actualEndCol > maxCols + 1) {
               throw new Error(
-                "Provided Start Column(" +
+                'Provided Start Column(' +
                   value +
-                  ") is out of bounds. Max Column in line " +
+                  ') is out of bounds. Max Column in line ' +
                   endLineNo +
-                  " is " +
-                  maxCols
+                  ' is ' +
+                  maxCols,
               ); //No I18n
             }
             normalizedRange[index] = actualEndCol;
@@ -133,9 +133,9 @@ export const constrainedModel = function (model, ranges, monaco) {
     return normalizedRange;
   };
   let restrictions = deepClone(ranges).sort(sortRangesInAscendingOrder);
-  const prepareRestrictions = function (restrictions) {
+  const prepareRestrictions = function(restrictions) {
     const content = model.getValue();
-    restrictions.forEach(function (restriction, index) {
+    restrictions.forEach(function(restriction, index) {
       const range = normalizeRange(restriction.range, content);
       const startLine = range[0];
       const startCol = range[1];
@@ -146,12 +146,12 @@ export const constrainedModel = function (model, ranges, monaco) {
         startLine,
         startCol,
         endLine,
-        endCol
+        endCol,
       );
       restriction.index = index;
       if (!restriction.allowMultiline) {
         restriction.allowMultiline = rangeConstructor.spansMultipleLines(
-          restriction.range
+          restriction.range,
         );
       }
       if (!restriction.label) {
@@ -159,8 +159,8 @@ export const constrainedModel = function (model, ranges, monaco) {
       }
     });
   };
-  const getCurrentEditableRanges = function () {
-    return restrictions.reduce(function (acc, restriction) {
+  const getCurrentEditableRanges = function() {
+    return restrictions.reduce(function(acc, restriction) {
       acc[restriction.label] = {
         allowMultiline: restriction.allowMultiline || false,
         index: restriction.index,
@@ -170,17 +170,17 @@ export const constrainedModel = function (model, ranges, monaco) {
       return acc;
     }, {});
   };
-  const getValueInEditableRanges = function () {
-    return restrictions.reduce(function (acc, restriction) {
+  const getValueInEditableRanges = function() {
+    return restrictions.reduce(function(acc, restriction) {
       acc[restriction.label] = model.getValueInRange(restriction.range);
       return acc;
     }, {});
   };
-  const updateValueInEditableRanges = function (object, forceMoveMarkers) {
-    if (typeof object === "object" && !Array.isArray(object)) {
+  const updateValueInEditableRanges = function(object, forceMoveMarkers) {
+    if (typeof object === 'object' && !Array.isArray(object)) {
       forceMoveMarkers =
-        typeof forceMoveMarkers === "boolean" ? forceMoveMarkers : false;
-      const restrictionsMap = restrictions.reduce(function (acc, restriction) {
+        typeof forceMoveMarkers === 'boolean' ? forceMoveMarkers : false;
+      const restrictionsMap = restrictions.reduce(function(acc, restriction) {
         if (restriction.label) {
           acc[restriction.label] = restriction;
         }
@@ -191,14 +191,14 @@ export const constrainedModel = function (model, ranges, monaco) {
         if (restriction) {
           const value = object[label];
           if (doesChangeHasMultilineConflict(restriction, value)) {
-            throw new Error("Multiline change is not allowed for " + label);
+            throw new Error('Multiline change is not allowed for ' + label);
           }
           const newRange = deepClone(restriction.range);
-          newRange.endLine = newRange.startLine + value.split("\n").length - 1;
-          newRange.endColumn = value.split("\n").pop().length;
+          newRange.endLine = newRange.startLine + value.split('\n').length - 1;
+          newRange.endColumn = value.split('\n').pop().length;
           if (isChangeInvalidAsPerUser(restriction, value, newRange)) {
             throw new Error(
-              "Change is invalidated by validate function of " + label
+              'Change is invalidated by validate function of ' + label,
             );
           }
           model.applyEdits([
@@ -209,16 +209,16 @@ export const constrainedModel = function (model, ranges, monaco) {
             },
           ]);
         } else {
-          console.error("No restriction found for " + label);
+          console.error('No restriction found for ' + label);
         }
       }
     } else {
-      throw new Error("Value must be an object"); //No I18n
+      throw new Error('Value must be an object'); //No I18n
     }
   };
-  const disposeRestrictions = function () {
+  const disposeRestrictions = function() {
     model._restrictionChangeListener.dispose();
-    window.removeEventListener("error", handleUnhandledPromiseRejection);
+    window.removeEventListener('error', handleUnhandledPromiseRejection);
     delete model.editInRestrictedArea;
     delete model.disposeRestrictions;
     delete model.getValueInEditableRanges;
@@ -236,8 +236,8 @@ export const constrainedModel = function (model, ranges, monaco) {
     delete model._oldDecorationsSource;
     return model;
   };
-  const isCursorAtCheckPoint = function (positions) {
-    positions.some(function (position) {
+  const isCursorAtCheckPoint = function(positions) {
+    positions.some(function(position) {
       const posLineNumber = position.lineNumber;
       const posCol = position.column;
       const length = restrictions.length;
@@ -254,19 +254,19 @@ export const constrainedModel = function (model, ranges, monaco) {
       }
     });
   };
-  const addEditableRangeListener = function (callback) {
-    if (typeof callback === "function") {
+  const addEditableRangeListener = function(callback) {
+    if (typeof callback === 'function') {
       model._editableRangeChangeListener.push(callback);
     }
   };
-  const triggerChangeListenersWith = function (currentChanges, allChanges) {
+  const triggerChangeListenersWith = function(currentChanges, allChanges) {
     const currentRanges = getCurrentEditableRanges();
-    model._editableRangeChangeListener.forEach(function (callback) {
+    model._editableRangeChangeListener.forEach(function(callback) {
       callback.call(model, currentChanges, allChanges, currentRanges);
     });
   };
-  const doUndo = function () {
-    return Promise.resolve().then(function () {
+  const doUndo = function() {
+    return Promise.resolve().then(function() {
       model.editInRestrictedArea = true;
       model.undo();
       model.editInRestrictedArea = false;
@@ -275,21 +275,21 @@ export const constrainedModel = function (model, ranges, monaco) {
         // So we don't need to remove the old decorations id
         model.deltaDecorations(
           model._oldDecorations,
-          model._oldDecorationsSource
+          model._oldDecorationsSource,
         );
-        model._oldDecorationsSource.forEach(function (object) {
+        model._oldDecorationsSource.forEach(function(object) {
           object.range = model.getDecorationRange(object.id);
         });
       }
     });
   };
-  const updateRange = function (
+  const updateRange = function(
     restriction,
     range,
     finalLine,
     finalColumn,
     changes,
-    changeIndex
+    changeIndex,
   ) {
     let oldRangeEndLineNumber = range.endLineNumber;
     let oldRangeEndColumn = range.endColumn;
@@ -304,7 +304,7 @@ export const constrainedModel = function (model, ranges, monaco) {
     const noOfCursorPositions = cursorPositions.length;
     // if (noOfCursorPositions > 0) {
     if (changesLength !== noOfCursorPositions) {
-      changes = changes.filter(function (change) {
+      changes = changes.filter(function(change) {
         const range = change.range;
         for (let i = 0; i < noOfCursorPositions; i++) {
           const cursorPosition = cursorPositions[i];
@@ -385,11 +385,11 @@ export const constrainedModel = function (model, ranges, monaco) {
     }
     // }
   };
-  const getInfoFrom = function (change, editableRange) {
+  const getInfoFrom = function(change, editableRange) {
     const info = {};
     const range = change.range;
     // Get State
-    if (change.text === "") {
+    if (change.text === '') {
       info.isDeletion = true;
     } else if (
       range.startLineNumber === range.endLineNumber &&
@@ -417,11 +417,11 @@ export const constrainedModel = function (model, ranges, monaco) {
     }
     return info;
   };
-  const updateRestrictions = function (ranges) {
+  const updateRestrictions = function(ranges) {
     restrictions = deepClone(ranges).sort(sortRangesInAscendingOrder);
     prepareRestrictions(restrictions);
   };
-  const toggleHighlightOfEditableAreas = function (cssClasses) {
+  const toggleHighlightOfEditableAreas = function(cssClasses) {
     if (!model._hasHighlight) {
       const cssClassForSingleLine =
         cssClasses.cssClassForSingleLine || enums.SINGLE_LINE_HIGHLIGHT_CLASS;
@@ -431,7 +431,7 @@ export const constrainedModel = function (model, ranges, monaco) {
         cssClasses.cssClassForRestrictedArea ||
         enums.RESTRICTED_AREA_HIGHLIGHT_CLASS;
 
-      const decorations = restrictions.map(function (restriction) {
+      const decorations = restrictions.map(function(restriction) {
         const decoration = {
           range: restriction.range,
           options: {
@@ -447,19 +447,21 @@ export const constrainedModel = function (model, ranges, monaco) {
       });
       getEditorBoundaryExcludingBoundaryList(
         model.getFullModelRange(),
-        restrictions.map((restriction) => restriction.range)
-      ).forEach((range) => {
+        restrictions.map(restriction => restriction.range),
+        model.getValue(),
+      ).forEach(range => {
         decorations.push({
           range,
           options: {
             className: cssClassForRestrictedArea,
           },
+          lable: 'Cannot Change this Section',
         });
-      })
+      });
       model._oldDecorations = model.deltaDecorations([], decorations);
-      model._oldDecorationsSource = decorations.map(function (
+      model._oldDecorationsSource = decorations.map(function(
         decoration,
-        index
+        index,
       ) {
         return Object.assign({}, decoration, {
           id: model._oldDecorations[index],
@@ -473,19 +475,19 @@ export const constrainedModel = function (model, ranges, monaco) {
       model._hasHighlight = false;
     }
   };
-  const handleUnhandledPromiseRejection = function () {
-    console.debug("handler for unhandled promise rejection");
+  const handleUnhandledPromiseRejection = function() {
+    console.debug('handler for unhandled promise rejection');
   };
-  const setAllRangesToPrev = function (rangeMap) {
+  const setAllRangesToPrev = function(rangeMap) {
     for (let key in rangeMap) {
       const restriction = rangeMap[key];
       restriction.range = restriction.prevRange;
     }
   };
-  const doesChangeHasMultilineConflict = function (restriction, text) {
-    return !restriction.allowMultiline && text.includes("\n");
+  const doesChangeHasMultilineConflict = function(restriction, text) {
+    return !restriction.allowMultiline && text.includes('\n');
   };
-  const isChangeInvalidAsPerUser = function (restriction, value, range) {
+  const isChangeInvalidAsPerUser = function(restriction, value, range) {
     return (
       restriction.validate &&
       !restriction.validate(value, range, restriction.lastInfo)
@@ -502,149 +504,149 @@ export const constrainedModel = function (model, ranges, monaco) {
 
   prepareRestrictions(restrictions);
   model._hasHighlight = false;
-  manipulatorApi._restrictionChangeListener = model.onDidChangeContent(
-    function (contentChangedEvent) {
-      const isUndoing = contentChangedEvent.isUndoing;
-      model._isRestrictedValueValid = true;
-      if (!(isUndoing && model.editInRestrictedArea)) {
-        const changes = contentChangedEvent.changes.sort(
-          sortRangesInAscendingOrder
-        );
-        const rangeMap = {};
-        const length = restrictions.length;
-        const isAllChangesValid = changes.every(function (change) {
-          const editedRange = change.range;
-          const rangeAsString = editedRange.toString();
-          rangeMap[rangeAsString] = null;
-          for (let i = 0; i < length; i++) {
-            const restriction = restrictions[i];
-            const range = restriction.range;
-            if (range.containsRange(editedRange)) {
-              if (doesChangeHasMultilineConflict(restriction, change.text)) {
-                return false;
-              }
-              rangeMap[rangeAsString] = restriction;
-              return true;
+  manipulatorApi._restrictionChangeListener = model.onDidChangeContent(function(
+    contentChangedEvent,
+  ) {
+    const isUndoing = contentChangedEvent.isUndoing;
+    model._isRestrictedValueValid = true;
+    if (!(isUndoing && model.editInRestrictedArea)) {
+      const changes = contentChangedEvent.changes.sort(
+        sortRangesInAscendingOrder,
+      );
+      const rangeMap = {};
+      const length = restrictions.length;
+      const isAllChangesValid = changes.every(function(change) {
+        const editedRange = change.range;
+        const rangeAsString = editedRange.toString();
+        rangeMap[rangeAsString] = null;
+        for (let i = 0; i < length; i++) {
+          const restriction = restrictions[i];
+          const range = restriction.range;
+          if (range.containsRange(editedRange)) {
+            if (doesChangeHasMultilineConflict(restriction, change.text)) {
+              return false;
             }
+            rangeMap[rangeAsString] = restriction;
+            return true;
           }
-          return false;
-        });
-        if (isAllChangesValid) {
-          changes.forEach(function (change, changeIndex) {
-            const changedRange = change.range;
-            const restriction = rangeMap[changedRange.toString()];
-            const editableRange = restriction.range;
-            const text = change.text || "";
-            /**
-             * Things to check before implementing the change
-             * - A | D | R => Addition | Deletion | Replacement
-             * - MC | SC => MultiLineChange | SingleLineChange
-             * - SOR | MOR | EOR => Change Occured in - Start Of Range | Middle Of Range | End Of Range
-             * - SSL | SML => Editable Range - Spans Single Line | Spans Multiple Line
-             */
-            const noOfLinesAdded = (text.match(/\n/g) || []).length;
-            const noOfColsAddedAtLastLine = text.split(/\n/g).pop().length;
+        }
+        return false;
+      });
+      if (isAllChangesValid) {
+        changes.forEach(function(change, changeIndex) {
+          const changedRange = change.range;
+          const restriction = rangeMap[changedRange.toString()];
+          const editableRange = restriction.range;
+          const text = change.text || '';
+          /**
+           * Things to check before implementing the change
+           * - A | D | R => Addition | Deletion | Replacement
+           * - MC | SC => MultiLineChange | SingleLineChange
+           * - SOR | MOR | EOR => Change Occured in - Start Of Range | Middle Of Range | End Of Range
+           * - SSL | SML => Editable Range - Spans Single Line | Spans Multiple Line
+           */
+          const noOfLinesAdded = (text.match(/\n/g) || []).length;
+          const noOfColsAddedAtLastLine = text.split(/\n/g).pop().length;
 
-            const lineDiffInRange =
-              changedRange.endLineNumber - changedRange.startLineNumber;
-            const colDiffInRange =
-              changedRange.endColumn - changedRange.startColumn;
+          const lineDiffInRange =
+            changedRange.endLineNumber - changedRange.startLineNumber;
+          const colDiffInRange =
+            changedRange.endColumn - changedRange.startColumn;
 
-            let finalLine = editableRange.endLineNumber;
-            let finalColumn = editableRange.endColumn;
+          let finalLine = editableRange.endLineNumber;
+          let finalColumn = editableRange.endColumn;
 
-            let columnsCarriedToEnd = 0;
-            if (
-              editableRange.endLineNumber === changedRange.startLineNumber ||
-              editableRange.endLineNumber === changedRange.endLineNumber
-            ) {
-              columnsCarriedToEnd +=
-                editableRange.endColumn - changedRange.startColumn + 1;
+          let columnsCarriedToEnd = 0;
+          if (
+            editableRange.endLineNumber === changedRange.startLineNumber ||
+            editableRange.endLineNumber === changedRange.endLineNumber
+          ) {
+            columnsCarriedToEnd +=
+              editableRange.endColumn - changedRange.startColumn + 1;
+          }
+
+          const info = getInfoFrom(change, editableRange);
+          restriction.lastInfo = info;
+          if (info.isAddition || info.isReplacement) {
+            if (info.rangeIsSingleLine) {
+              /**
+               * Only Column Change has occurred , so regardless of the position of the change
+               * Addition of noOfCols is enough
+               */
+              if (noOfLinesAdded === 0) {
+                finalColumn += noOfColsAddedAtLastLine;
+              } else {
+                finalLine += noOfLinesAdded;
+                if (info.startColumnOfRange) {
+                  finalColumn += noOfColsAddedAtLastLine;
+                } else if (info.endColumnOfRange) {
+                  finalColumn = noOfColsAddedAtLastLine + 1;
+                } else {
+                  finalColumn = noOfColsAddedAtLastLine + columnsCarriedToEnd;
+                }
+              }
             }
-
-            const info = getInfoFrom(change, editableRange);
-            restriction.lastInfo = info;
-            if (info.isAddition || info.isReplacement) {
-              if (info.rangeIsSingleLine) {
-                /**
-                 * Only Column Change has occurred , so regardless of the position of the change
-                 * Addition of noOfCols is enough
-                 */
+            if (info.rangeIsMultiLine) {
+              // Handling for Start Of Range is not required
+              finalLine += noOfLinesAdded;
+              if (info.endLineOfRange) {
                 if (noOfLinesAdded === 0) {
                   finalColumn += noOfColsAddedAtLastLine;
                 } else {
-                  finalLine += noOfLinesAdded;
-                  if (info.startColumnOfRange) {
-                    finalColumn += noOfColsAddedAtLastLine;
-                  } else if (info.endColumnOfRange) {
-                    finalColumn = noOfColsAddedAtLastLine + 1;
-                  } else {
-                    finalColumn = noOfColsAddedAtLastLine + columnsCarriedToEnd;
-                  }
-                }
-              }
-              if (info.rangeIsMultiLine) {
-                // Handling for Start Of Range is not required
-                finalLine += noOfLinesAdded;
-                if (info.endLineOfRange) {
-                  if (noOfLinesAdded === 0) {
-                    finalColumn += noOfColsAddedAtLastLine;
-                  } else {
-                    finalColumn = columnsCarriedToEnd + noOfColsAddedAtLastLine;
-                  }
+                  finalColumn = columnsCarriedToEnd + noOfColsAddedAtLastLine;
                 }
               }
             }
-            if (info.isDeletion || info.isReplacement) {
-              if (info.rangeIsSingleLine) {
+          }
+          if (info.isDeletion || info.isReplacement) {
+            if (info.rangeIsSingleLine) {
+              finalColumn -= colDiffInRange;
+            }
+            if (info.rangeIsMultiLine) {
+              if (info.endLineOfRange) {
+                finalLine -= lineDiffInRange;
                 finalColumn -= colDiffInRange;
-              }
-              if (info.rangeIsMultiLine) {
-                if (info.endLineOfRange) {
-                  finalLine -= lineDiffInRange;
-                  finalColumn -= colDiffInRange;
-                } else {
-                  finalLine -= lineDiffInRange;
-                }
+              } else {
+                finalLine -= lineDiffInRange;
               }
             }
-            updateRange(
-              restriction,
-              editableRange,
-              finalLine,
-              finalColumn,
-              changes,
-              changeIndex
-            );
-          });
-          const values = model.getValueInEditableRanges();
-          const currentlyEditedRanges = {};
-          for (let key in rangeMap) {
-            const restriction = rangeMap[key];
-            const range = restriction.range;
-            const rangeString = restriction.label || range.toString();
-            const value = values[rangeString];
-            if (isChangeInvalidAsPerUser(restriction, value, range)) {
-              setAllRangesToPrev(rangeMap);
-              doUndo();
-              return; // Breaks the loop and prevents the triggerChangeListener
-            }
-            currentlyEditedRanges[rangeString] = value;
           }
-          if (model._hasHighlight) {
-            model._oldDecorationsSource.forEach(function (object) {
-              object.range = model.getDecorationRange(object.id);
-            });
+          updateRange(
+            restriction,
+            editableRange,
+            finalLine,
+            finalColumn,
+            changes,
+            changeIndex,
+          );
+        });
+        const values = model.getValueInEditableRanges();
+        const currentlyEditedRanges = {};
+        for (let key in rangeMap) {
+          const restriction = rangeMap[key];
+          const range = restriction.range;
+          const rangeString = restriction.label || range.toString();
+          const value = values[rangeString];
+          if (isChangeInvalidAsPerUser(restriction, value, range)) {
+            setAllRangesToPrev(rangeMap);
+            doUndo();
+            return; // Breaks the loop and prevents the triggerChangeListener
           }
-          triggerChangeListenersWith(currentlyEditedRanges, values);
-        } else {
-          doUndo();
+          currentlyEditedRanges[rangeString] = value;
         }
-      } else if (model.editInRestrictedArea) {
-        model._isRestrictedValueValid = false;
+        if (model._hasHighlight) {
+          model._oldDecorationsSource.forEach(function(object) {
+            object.range = model.getDecorationRange(object.id);
+          });
+        }
+        triggerChangeListenersWith(currentlyEditedRanges, values);
+      } else {
+        doUndo();
       }
+    } else if (model.editInRestrictedArea) {
+      model._isRestrictedValueValid = false;
     }
-  );
+  });
   window.onerror = handleUnhandledPromiseRejection;
   const exposedApi = {
     editInRestrictedArea: false,
