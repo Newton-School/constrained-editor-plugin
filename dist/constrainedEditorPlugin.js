@@ -456,6 +456,7 @@ const constrainedModel = function(model, ranges, monaco) {
             className: restriction.allowMultiline
               ? cssClassForMultiLine
               : cssClassForSingleLine,
+              allowMultiline: false,
           },
         };
         if (restriction.label) {
