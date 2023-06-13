@@ -472,6 +472,7 @@ const constrainedModel = function(model, ranges, monaco) {
           range,
           options: {
             className: cssClassForRestrictedArea,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
           },
           lable: 'Cannot Change this Section',
         });
@@ -716,7 +717,7 @@ const getEditorBoundaryExcludingBoundaryList = (
 ) => {
   const finalBoundaryList = [];
   const lastBoundaryDetails = editorBoundary;
-  const contentValue = content.split('\r\n');
+  const contentValue = content.split('\n');
   boundaryList.forEach((boundary, index) => {
     if (
       boundary.startLineNumber > lastBoundaryDetails.startLineNumber ||

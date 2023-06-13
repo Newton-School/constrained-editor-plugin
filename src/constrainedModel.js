@@ -454,6 +454,7 @@ export const constrainedModel = function(model, ranges, monaco) {
           range,
           options: {
             className: cssClassForRestrictedArea,
+            stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
           },
           lable: 'Cannot Change this Section',
         });

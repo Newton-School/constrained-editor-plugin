@@ -5,7 +5,7 @@ export const getEditorBoundaryExcludingBoundaryList = (
 ) => {
   const finalBoundaryList = [];
   const lastBoundaryDetails = editorBoundary;
-  const contentValue = content.split('\r\n');
+  const contentValue = content.split('\n');
   boundaryList.forEach((boundary, index) => {
     if (
       boundary.startLineNumber > lastBoundaryDetails.startLineNumber ||
