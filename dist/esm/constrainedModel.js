@@ -231,6 +231,7 @@ export const constrainedModel = function(model, ranges, monaco) {
     delete model._isCursorAtCheckPoint;
     delete model._currentCursorPositions;
     delete model._editableRangeChangeListener;
+    delete model._undoRangeChangeListener;
     delete model._restrictionChangeListener;
     delete model._oldDecorations;
     delete model._oldDecorationsSource;
@@ -259,16 +260,27 @@ export const constrainedModel = function(model, ranges, monaco) {
       model._editableRangeChangeListener.push(callback);
     }
   };
+  const addUndoEditListener = function(callback) {
+    if (typeof callback === 'function') {
+      model._undoRangeChangeListener.push(callback);
+    }
+  };
   const triggerChangeListenersWith = function(currentChanges, allChanges) {
     const currentRanges = getCurrentEditableRanges();
     model._editableRangeChangeListener.forEach(function(callback) {
       callback.call(model, currentChanges, allChanges, currentRanges);
     });
   };
+  const triggerUndoListenersWith = function() {
+    model._undoRangeChangeListener.forEach(function(callback) {
+      callback.call();
+    });
+  };
   const doUndo = function() {
     return Promise.resolve().then(function() {
       model.editInRestrictedArea = true;
       model.undo();
+      triggerUndoListenersWith()
       model.editInRestrictedArea = false;
       if (model._hasHighlight && model._oldDecorationsSource) {
         // id present in the decorations info will be omitted by monaco
@@ -500,6 +512,7 @@ export const constrainedModel = function(model, ranges, monaco) {
     _isRestrictedModel: true,
     _isRestrictedValueValid: true,
     _editableRangeChangeListener: [],
+    _undoRangeChangeListener: [],
     _isCursorAtCheckPoint: isCursorAtCheckPoint,
     _currentCursorPositions: [],
   };
@@ -659,6 +672,7 @@ export const constrainedModel = function(model, ranges, monaco) {
     updateRestrictions: updateRestrictions,
     updateValueInEditableRanges: updateValueInEditableRanges,
     toggleHighlightOfEditableAreas: toggleHighlightOfEditableAreas,
+    onUndoInEditor:addUndoEditListener,
   };
   for (let funcName in manipulatorApi) {
     Object.defineProperty(model, funcName, {
