@@ -1,7 +1,1 @@
-export const TypeMustBe = function (type, key, additional) {
-  return 'The value for the ' + key + ' should be of type ' + (Array.isArray(type) ? type.join(' | ') : type) + '. ' + (additional || '')
-}
-const definedErrors = {
-  TypeMustBe : TypeMustBe
-};
-export default definedErrors;
+export const TypeMustBe=function(e,r,t){return"The value for the "+r+" should be of type "+(Array.isArray(e)?e.join(" | "):e)+". "+(t||"")};const definedErrors={TypeMustBe};export default definedErrors;
