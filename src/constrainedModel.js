@@ -259,6 +259,15 @@ export const constrainedModel = function(model, ranges, monaco) {
       model._editableRangeChangeListener.push(callback);
     }
   };
+  const removeEditableRangeListener = function(callback) {
+      if (typeof callback === 'function') {
+        const index = model._editableRangeChangeListener.indexOf(callback);
+        if (index !== -1) {
+          model._editableRangeChangeListener.splice(index, 1);
+        }
+      }
+    };
+
   const triggerChangeListenersWith = function(currentChanges, allChanges) {
     const currentRanges = getCurrentEditableRanges();
     model._editableRangeChangeListener.forEach(function(callback) {
@@ -656,6 +665,7 @@ export const constrainedModel = function(model, ranges, monaco) {
     getValueInEditableRanges: getValueInEditableRanges,
     disposeRestrictions: disposeRestrictions,
     onDidChangeContentInEditableRange: addEditableRangeListener,
+    offDidChangeContentInEditableRange: removeEditableRangeListener,
     updateRestrictions: updateRestrictions,
     updateValueInEditableRanges: updateValueInEditableRanges,
     toggleHighlightOfEditableAreas: toggleHighlightOfEditableAreas,
